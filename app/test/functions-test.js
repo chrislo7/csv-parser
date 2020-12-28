@@ -52,12 +52,12 @@ describe('transformToJson', () => {
     });
     it ('should throw an error if headers do not match expected results', () => {
         expect(() => {
-            assets.transformToJson(['Employee Id, First Name, Last Name, Phone Number, Email, Address']);
+            assets.transformToJson(['EmployeeID, First Name, Last Name, Phone Number, Email, Address']);
         })
         .to.throw(Error,
             'Error with data headers. \n'
             + 'Ensure it matches the following: '
-            + 'Employee Id, First Name, Last Name, Phone Number, Email'
+            + 'EmployeeID, First Name, Last Name, Phone Number, Email'
         );
     });
 });
