@@ -11,9 +11,7 @@ const transformToJson = (rows) => {
         throw new Error('Input file contains empty data.');
     } else if (rows[0] != expectedHeaders) {
         throw new Error(
-        'Error with data headers. \n'
-        + 'Ensure it matches the following: '
-        + 'EmployeeID, First Name, Last Name, Phone Number, Email');
+        `Ensure data headers matches: 'EmployeeID, First Name, Last Name, Phone Number, Email'`);
     }
 
     // first element of this array will always be headers, e.g. employee id, first name ...etc.

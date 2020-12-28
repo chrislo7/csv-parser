@@ -5,6 +5,8 @@ const assets = require('../functions.js');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 
+const Employee = require('../employee.js');
+
 describe('readInput', () => {
     let results;
 
@@ -38,10 +40,7 @@ describe('readInput', () => {
 });
 
 describe('transformToJson', () => {
-//     [ 'Employee Id,First Name,Last Name,Phone Number,Email',
-//   'G123456,Wayner,Gretzly,(123) 111-2222,the-great-1@gmail.com',
-//   'H3332221,Jacques,Nicklaus,(222) 343-3434,the-golden-bear@hotmail.com',
-//   'T45454545,Rickey,Mantle,(321)332-9132,the-mick@msn.com' ]
+    let testArr = [ 'EmployeeID,First Name,Last Name,Phone Number,Email'];
 
     // Expected error handling
     it ('should throw an error if parameter was an empty array', () => {
@@ -51,13 +50,28 @@ describe('transformToJson', () => {
         .to.throw(Error, 'Input file contains empty data.');
     });
     it ('should throw an error if headers do not match expected results', () => {
+        let extraHeaderArray = testArr;
+        extraHeaderArray[0] += ',Address';
         expect(() => {
-            assets.transformToJson(['EmployeeID, First Name, Last Name, Phone Number, Email, Address']);
+            assets.transformToJson(extraHeaderArray);
         })
         .to.throw(Error,
-            'Error with data headers. \n'
-            + 'Ensure it matches the following: '
-            + 'EmployeeID, First Name, Last Name, Phone Number, Email'
-        );
+            `Ensure data headers matches: 'EmployeeID, First Name, Last Name, Phone Number, Email'`);
+    });
+
+    // add data to testArr
+    testArr.push('G123456,Wayner,Gretzly,(123) 111-2222,the-great-1@gmail.com');
+    testArr.push('H3332221,Jacques,Nicklaus,(222) 343-3434,the-golden-bear@hotmail.com');
+    testArr.push('T45454545,Rickey,Mantle,(321)332-9132,the-mick@msn.com');
+
+    // test results from transformToJson
+    let employees = assets.transformToJson(testArr);
+    it ('should return an array', () => {
+        expect(employees).to.be.an('array');
+    });
+    it ('should contain an array of the Employee class', () => {
+        employees.forEach((employee) => {
+            expect(employee instanceof Employee).to.be.true;
+        });
     });
 });
