@@ -1,9 +1,11 @@
 const fs = require('fs');
 const parse = require('csv-parse');
 
+const Employee = require('./employee.js');
+
 // helper function to transform array of strings into json structure.
 const transformToJson = (rows) => {
-    let expectedHeaders = 'Employee Id,First Name,Last Name,Phone Number,Email';
+    let expectedHeaders = 'EmployeeID,First Name,Last Name,Phone Number,Email';
     // error handling.
     if (!rows.length) {
         throw new Error('Input file contains empty data.');
@@ -11,22 +13,14 @@ const transformToJson = (rows) => {
         throw new Error(
         'Error with data headers. \n'
         + 'Ensure it matches the following: '
-        + 'Employee Id, First Name, Last Name, Phone Number, Email');
+        + 'EmployeeID, First Name, Last Name, Phone Number, Email');
     }
 
     // first element of this array will always be headers, e.g. employee id, first name ...etc.
-    let headers = rows[0].split(',');
-    let keys = headers.map((header) => {
-        let key = header.split(' ').join('');
-        return key.charAt(0).toLowerCase() + key.slice(1);
-    });
-
     rows.shift();
     let transformedRows = rows.map((row) => {
-        let column = row.split(',');
-        let data = {};
-        keys.forEach((key, index) => { data[key] = column[index] });
-        return data;
+        let columns = row.split(',');
+        return new Employee(...columns);
     });
 
     return transformedRows;
@@ -51,6 +45,10 @@ const readInput = (filepath, callback) => {
     });
 };
 
+// // validate values
+// const validateValues = (values) => {
+
+// };
 
 
 
