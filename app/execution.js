@@ -1,4 +1,3 @@
-const fs = require('fs');
 const fn = require('./functions.js');
 
 const paths = process.argv.slice(2);
