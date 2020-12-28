@@ -22,14 +22,19 @@ environment:
     MYSQL_USER: 
     MYSQL_PASSWORD: 
 ```
+2. Ensure you are in the project directory and  `cd app`
+3. Run `npm install`
 
 ### Running the application
 
 1. Run `docker-compose up`
 2. Verify docker mysql and redis are both running properly with `docker ps` and
 `docker exec -it %CONTAINER_ID%  /bin/sh; exit` (Replace `%CONTAINER_ID%` with Container ID in docker ps)
-3. You should be able to log in to verify database contents with 
-`mysql employeedb -u %MYSQL_USER% -p` and entering the password.
+    - You should be able to log in to verify database contents with `mysql employeedb -u %MYSQL_USER% -p` and entering the password.
+3. Run `npm start %INPUT_PATH% %OUTPUT_PATH%` OR `node executiion.js %INPUT_PATH% %OUTPUT_PATH%`
+    - INPUT PATH: this is a required field, with CSV as file type.
+    - OUTPUT PATH: this is an optional field, with CSV as file type.
+
 
 ### Exiting the application
 1. Run ctrl-c / `docker-compose stop` to stop the containers
