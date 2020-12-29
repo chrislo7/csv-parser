@@ -8,4 +8,4 @@ class Employee {
     }
 }
   
-  module.exports = Employee;
+module.exports = Employee;
