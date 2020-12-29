@@ -19,24 +19,25 @@ describe('readInput', () => {
     });
     it ('should throw an error if input is not .csv', () => {
         expect(() => {
-            assets.readInput('input/input-test.xml', (data) => { results = data });
+            assets.readInput('input/input-test.xml', (data) => results = data);
         })
         .to.throw(Error, 'Filetype xml is not supported. Please use a .csv file.');
     });
 
-    assets.readInput('input/input-test.csv', (data) => { results = data });
-
-    it ('should take input from text file', () => {
-        assert.exists(results);
-    });
-    it ('should return an array.', () => {
-        expect(results).to.be.an('array');
-    });
-    it ('should contain an array of objects with the defined keys', () => {
-        results.forEach((obj) => {
-            expect(obj).to.include.all.keys('employeeId', 'firstName', 'lastName', 'phoneNumber', 'email');
+    assets.readInput('input/input-test.csv', (data) => results = data);
+    setTimeout(() => {
+        it ('should take input from text file', () => {
+            assert.exists(results);
         });
-    });
+        it ('should return an array.', () => {
+            expect(results).to.be.an('array');
+        });
+        it ('should contain an array of objects with the defined keys', () => {
+            results.forEach((obj) => {
+                expect(obj).to.include.all.keys('employeeId', 'firstName', 'lastName', 'phoneNumber', 'email');
+            });
+        });
+    }, 10);
 });
 
 describe('transformToJson', () => {
@@ -56,7 +57,7 @@ describe('transformToJson', () => {
             assets.transformToJson(extraHeaderArray);
         })
         .to.throw(Error,
-            `Ensure data headers matches: 'EmployeeID, First Name, Last Name, Phone Number, Email'`);
+            `Ensure data headers matches: 'EmployeeID,First Name,Last Name,Phone Number,Email'`);
     });
 
     // add data to testArr

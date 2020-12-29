@@ -8,9 +8,8 @@ if (paths.length > 1) {
     output = paths[1];
 }
 
-let inputData;
-fn.readInput(input, (data) => {
-    // return an array of objects.
-    // each object contains each person's information.
-    inputData = data;
-});
+let inputData = fn.readInput(input).then((res) => res);
+
+setTimeout(() => {
+    console.log(inputData);
+}, 10);
