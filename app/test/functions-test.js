@@ -94,8 +94,39 @@ describe('validateData', () => {
             email: 'chris@chris.com'
         }
     ];
-
     it ('should return all employees if all validations pass', () => {
+        let results = assets.validateData(employees);
+        expect(results).to.have.lengthOf(2);
+    });
+
+
+    it ('should remove invalid entries', () => {
+        employees.push(
+            {
+                // missing a letter before 6 digits
+                employeeId: '123456',
+                firstName: 'john',
+                lastName: 'doe',
+                phoneNumber: '1234567890',
+                email: 'john@john.com'
+            },
+            {
+                employeeId: 'G223344',
+                firstName: 'jane',
+                lastName: 'doe',
+                phoneNumber: '(123)4567890',
+                // missing domain name
+                email: 'jane@c'
+            },
+            {
+                employeeId: 'G112233',
+                firstName: 'karen',
+                lastName: 'joe',
+                // phone number contains a letter
+                phoneNumber: '613.555.777G',
+                email: 'karen@karen.com'
+            }
+        );
         let results = assets.validateData(employees);
         expect(results).to.have.lengthOf(2);
     });

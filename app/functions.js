@@ -46,7 +46,6 @@ const readInput = (filepath) => {
 // helper function to validate employee IDs
 const validateEmployeeId = (id, index) => {
     // Valid Employee IDs start with a letter and have a minimum of 6 digits after that.
-
     // this regex is self created. note that the first letter ignores cases.
     var regex = /[a-z](?:\d.*){6,}/i;
     if (!regex.test(id)) {
@@ -89,15 +88,24 @@ const validateEmail = (email, index) => {
 
 // validate values
 const validateData = (employees) => {
-    // Print the line number and reason for each invalid entry.
-    employees.forEach((employee, index) => {
-        validateEmployeeId(employee.employeeId, index);
-        validatePhoneNumber(employee.phoneNumber, index);
-        validateEmail(employee.email, index);
+    let validEmployees = employees.filter((employee, index) => {
+
+        // gather results of helper fns to a boolean array.
+        // each helper function will print an error statement if it contains an invalid entry.
+        let validations = [
+            validateEmployeeId(employee.employeeId, index),
+            validatePhoneNumber(employee.phoneNumber, index),
+            validateEmail(employee.email, index)
+        ];
+
+        // only return employee if all validations pass
+        if ((validations.every((validation) => validation))) {
+            return employee;
+        }
     });
 
     // cleaned array with validated data.
-    return employees;
+    return validEmployees;
 };
 
 module.exports = {
