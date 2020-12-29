@@ -8,8 +8,10 @@ if (paths.length > 1) {
     output = paths[1];
 }
 
-let inputData = fn.readInput(input).then((res) => res);
-
+let inputData = fn.readInput(input).then((res) => {
+    let validatedData = fn.validateData(res);
+    return validatedData;
+});
 setTimeout(() => {
     console.log(inputData);
 }, 10);

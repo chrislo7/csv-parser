@@ -76,3 +76,27 @@ describe('transformToJson', () => {
         });
     });
 });
+
+describe('validateData', () => {
+    let employees = [
+        {
+            employeeId: 'G123456',
+            firstName: 'Chris',
+            lastName: 'Lo',
+            phoneNumber: '647123456',
+            email: 'chris@chris.com'
+        },
+        {
+            employeeId: 'G123456',
+            firstName: 'Bobby',
+            lastName: 'Jackson',
+            phoneNumber: '(647)-111-4444',
+            email: 'chris@chris.com'
+        }
+    ];
+
+    it ('should return all employees if all validations pass', () => {
+        let results = assets.validateData(employees);
+        expect(results).to.have.lengthOf(2);
+    });
+});
