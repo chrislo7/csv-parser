@@ -37,7 +37,7 @@ describe('readInput', () => {
                 expect(obj).to.include.all.keys('employeeId', 'firstName', 'lastName', 'phoneNumber', 'email');
             });
         });
-    }, 10);
+    }, 100);
 });
 
 describe('transformToJson', () => {
@@ -99,9 +99,9 @@ describe('validateData', () => {
         expect(results).to.have.lengthOf(2);
     });
 
-
     it ('should remove invalid entries', () => {
-        employees.push(
+        let unverifiedEmployees = employees;
+        unverifiedEmployees.push(
             {
                 // missing a letter before 6 digits
                 employeeId: '123456',
@@ -127,7 +127,7 @@ describe('validateData', () => {
                 email: 'karen@karen.com'
             }
         );
-        let results = assets.validateData(employees);
+        let results = assets.validateData(unverifiedEmployees);
         expect(results).to.have.lengthOf(2);
     });
 });
