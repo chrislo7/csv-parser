@@ -9,9 +9,7 @@ if (paths.length > 1) {
 }
 
 let inputData = fn.readInput(input).then((res) => {
-    let validatedData = fn.validateData(res);
-    return validatedData;
+    return fn.validateData(res);
+}).then(res => {
+    fn.writeOutput();
 });
-setTimeout(() => {
-    console.log(inputData);
-}, 10);

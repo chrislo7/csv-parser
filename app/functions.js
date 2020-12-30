@@ -1,5 +1,8 @@
 const fs = require('fs');
 const parse = require('csv-parse');
+const dotenv = require('dotenv');
+const mysql = require('mysql');
+const moment = require('moment');
 
 const Employee = require('./employee.js');
 
@@ -26,6 +29,8 @@ const transformToJson = (rows) => {
 
 // read data from CSV file
 const readInput = (filepath) => {
+    console.log('Reading input data...');
+
     // Error handling.
     if (!filepath) {
         throw new Error('No input file provided.');
@@ -40,6 +45,35 @@ const readInput = (filepath) => {
         .on('error', (error) => reject(error))
         .on('data', (csvRow) => csvData.push(csvRow[0]))
         .on('end', () => resolve(transformToJson(csvData)));
+    });
+};
+
+// write data to CSV file and database.
+const writeOutput = (filepath) => {
+    console.log('Writing to database...');
+
+    dotenv.config();
+    var connection = mysql.createConnection({
+        // host: `${process.env.PORT}`
+        host: 'localhost',
+        port: process.env.PORT,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
+    });
+    connection.connect((err) => {
+        if (err) throw err;
+        console.log("Connected!");
+        var sql = 
+            `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email)
+            VALUES ('G123456', 'Chris', 'Lo', '6478362725', 'c@c.com', '${moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')}')`;
+        connection.query(sql, (err, result) => {
+            if (err) {
+                // console.log(sql);
+                throw err;
+            }
+          console.log("1 record inserted");
+        });
     });
 };
 
@@ -84,10 +118,10 @@ const validateEmail = (email, index) => {
     return true;
 };
 
-
-
 // validate values
 const validateData = (employees) => {
+    console.log('Validating data...');
+
     let validEmployees = employees.filter((employee, index) => {
 
         // gather results of helper fns to a boolean array.
@@ -111,5 +145,6 @@ const validateData = (employees) => {
 module.exports = {
     transformToJson: transformToJson,
     readInput: readInput,
+    writeOutput: writeOutput,
     validateData: validateData
 };
