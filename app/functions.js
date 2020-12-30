@@ -65,7 +65,7 @@ const writeOutput = (filepath) => {
         if (err) throw err;
         console.log("Connected!");
         var sql = 
-            `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email)
+            `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email, created_at)
             VALUES ('G123456', 'Chris', 'Lo', '6478362725', 'c@c.com', '${moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')}')`;
         connection.query(sql, (err, result) => {
             if (err) {
@@ -73,6 +73,7 @@ const writeOutput = (filepath) => {
                 throw err;
             }
           console.log("1 record inserted");
+          connection.end();
         });
     });
 };
