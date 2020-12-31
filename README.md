@@ -23,7 +23,17 @@ environment:
     MYSQL_PASSWORD: 
 ```
 2. Ensure you are in the project directory and  `cd app`
-3. Run `npm install`
+2. Create an `.env` file here and add the following:
+```
+# port
+PORT=3306
+
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DATABASE=employeedb
+```
+    - MYSQL_USER and MYSQL_PASSWORD will be the credentials you've created above with the same headings.
+. Run `npm install`
 
 ### Running the application
 
@@ -31,10 +41,10 @@ environment:
 2. Verify docker mysql and redis are both running properly with `docker ps` and
 `docker exec -it %CONTAINER_ID%  /bin/sh; exit` (Replace `%CONTAINER_ID%` with Container ID in docker ps)
     - You should be able to log in to verify database contents with `mysql employeedb -u %MYSQL_USER% -p` and entering the password.
-3. Run `npm start %INPUT_PATH% %OUTPUT_PATH%` OR `node executiion.js %INPUT_PATH% %OUTPUT_PATH%`
+3. Run `cd app` in a separate terminal tab/window.
+4. Run `node executiion.js %INPUT_PATH% %OUTPUT_PATH%`
     - INPUT PATH: this is a required field, with CSV as file type.
     - OUTPUT PATH: this is an optional field, with CSV as file type.
-
 
 ### Exiting the application
 1. Run ctrl-c / `docker-compose stop` to stop the containers
@@ -44,28 +54,42 @@ environment:
 1. After running ctrl-c, run `docker-compose down -v`
 The volume flag, `-v` removes all volumes. Use this to do a full reset of environment.
 
+### Testing
+1. Run `cd app` while in the project's root directory.
+2. Run `npm run test` to run automated testing.
+
 ## Code Design
 
-### Database
+
+
+### Database Design
 I opted to use mysql as it is what I'm currently most familiar with.
-For the database design itself, it contains a single table, `employee`, 
-with the required columns:
+For the database design itself, it simply contains a single table, `employee` with the required columns.
 
 ```
-+--------------+--------------+------+-----+-------------------+
-| Field        | Type         | Null | Key | Default           |
-+--------------+--------------+------+-----+-------------------+
-| employee_id  | varchar(255) | YES  |     | NULL              |
-| first_name   | varchar(255) | YES  |     | NULL              |
-| last_name    | varchar(255) | YES  |     | NULL              |
-| phone_number | varchar(255) | YES  |     | NULL              |
-| email        | varchar(255) | YES  |     | NULL              |
-| created_at   | timestamp    | NO   |     | CURRENT_TIMESTAMP |
-| deleted_at   | timestamp    | YES  |     | NULL              |
-+--------------+--------------+------+-----+-------------------+
++--------------+--------------+------+-----+---------------------+-----------------------------+
+| Field        | Type         | Null | Key | Default             | Extra                       |
++--------------+--------------+------+-----+---------------------+-----------------------------+
+| employee_id  | varchar(255) | NO   | PRI | NULL                |                             |
+| first_name   | varchar(255) | YES  |     | NULL                |                             |
+| last_name    | varchar(255) | YES  |     | NULL                |                             |
+| phone_number | varchar(255) | YES  |     | NULL                |                             |
+| email        | varchar(255) | YES  |     | NULL                |                             |
+| created_at   | timestamp    | NO   |     | 0000-00-00 00:00:00 |                             |
+| updated_at   | timestamp    | NO   |     | CURRENT_TIMESTAMP   | on update CURRENT_TIMESTAMP |
+| deleted_at   | timestamp    | YES  |     | NULL                |                             |
++--------------+--------------+------+-----+---------------------+-----------------------------+
 ```
+- PRIMARY KEY is the `employee_id`.
+- created_at, updated_at and deleted_at are timestamp fields that would automatically generate based on the csv data.
+    - note that deleted_at is not currently being used as deleting an entry is currently not supported.
+- created_at will only update when the employee is first inserted into this table.
+- updated_at will only update when the employee is first inserted into this table as well as when it is updated
 
 ## Referenced Materials
 
 Getting started with Docker Compose: 
 https://docs.docker.com/compose/gettingstarted/
+
+Invalid default value for timestamp
+https://stackoverflow.com/questions/36747096/invalid-default-value-for-timestamp
