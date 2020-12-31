@@ -27,6 +27,53 @@ const transformToJson = (rows) => {
     return transformedRows;
 }
 
+// helper function to write to SQL
+const writeToDatabase = (data) => {
+    console.log("Establishing connection with mysql database...");
+
+    // create database connection here.
+    dotenv.config();
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        port: process.env.PORT,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
+    });
+
+    connection.connect((err) => {
+        if (err) throw err;
+
+        console.log("Connected!");
+        console.log('Writing to database...');
+
+        let sql = `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email, created_at, updated_at) VALUES `;
+
+        data.forEach((employee, index) => {
+            sql += `('${employee.employeeId}', '${employee.firstName}', '${employee.lastName}', '${employee.phoneNumber}', '${employee.email}', null, null)`;
+
+            // only insert commas if not the last employee in the list.
+            if (index != data.length - 1) {
+                sql += ', ';
+            }
+        });
+        // on duplicate of employee id, update the provided values instead.
+        // in addition, do not modify the created_at column.
+        sql += ` ON DUPLICATE KEY UPDATE first_name = VALUES(first_name), last_name = VALUES(last_name), phone_number = VALUES(phone_number), email = VALUES(email), updated_at = null`;
+
+        connection.query(sql, (err, result) => {
+            if (err) throw err;
+            console.log(`Success! ${data.length} record(s) affected.`);
+            connection.end();
+        });
+    });
+};
+
+// helper function to write to an output path;
+const writeFile = (filepath) => {
+    console.log('Writing to an output file...');
+};
+
 // read data from CSV file
 const readInput = (filepath) => {
     console.log('Reading input data...');
