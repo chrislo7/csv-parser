@@ -2,7 +2,6 @@ const fs = require('fs');
 const parse = require('csv-parse');
 const dotenv = require('dotenv');
 const mysql = require('mysql');
-const moment = require('moment');
 
 const Employee = require('./employee.js');
 
