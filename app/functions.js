@@ -49,33 +49,11 @@ const readInput = (filepath) => {
 };
 
 // write data to CSV file and database.
-const writeOutput = (filepath) => {
-    console.log('Writing to database...');
-
-    dotenv.config();
-    var connection = mysql.createConnection({
-        // host: `${process.env.PORT}`
-        host: 'localhost',
-        port: process.env.PORT,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
-    connection.connect((err) => {
-        if (err) throw err;
-        console.log("Connected!");
-        var sql = 
-            `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email, created_at)
-            VALUES ('G123456', 'Chris', 'Lo', '6478362725', 'c@c.com', '${moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')}')`;
-        connection.query(sql, (err, result) => {
-            if (err) {
-                // console.log(sql);
-                throw err;
-            }
-          console.log("1 record inserted");
-          connection.end();
-        });
-    });
+const writeOutput = (data, filepath) => {
+    writeToDatabase(data);
+    if (filepath) {
+        writeFile(data, filepath);
+    }
 };
 
 // helper function to validate employee IDs

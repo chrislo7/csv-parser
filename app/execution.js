@@ -8,8 +8,8 @@ if (paths.length > 1) {
     output = paths[1];
 }
 
-let inputData = fn.readInput(input).then((res) => {
+fn.readInput(input).then((res) => {
     return fn.validateData(res);
-}).then(res => {
-    fn.writeOutput();
+}).then(data => {
+    fn.writeOutput(data, output);
 });
