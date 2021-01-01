@@ -1,5 +1,3 @@
-const chai = require('chai')
-const fs = require('fs')
 const assets = require('../functions.js');
 
 const assert = require('chai').assert;
@@ -40,13 +38,13 @@ describe('readInput', () => {
     }, 100);
 });
 
-describe('transformToJson', () => {
+describe('transformInput', () => {
     let testArr = [ 'EmployeeID,First Name,Last Name,Phone Number,Email'];
 
     // Expected error handling
     it ('should throw an error if parameter was an empty array', () => {
         expect(() => {
-            assets.transformToJson([]);
+            assets.transformInput([]);
         })
         .to.throw(Error, 'Input file contains empty data.');
     });
@@ -54,7 +52,7 @@ describe('transformToJson', () => {
         let extraHeaderArray = testArr;
         extraHeaderArray[0] += ',Address';
         expect(() => {
-            assets.transformToJson(extraHeaderArray);
+            assets.transformInput(extraHeaderArray);
         })
         .to.throw(Error,
             `Ensure data headers matches: 'EmployeeID,First Name,Last Name,Phone Number,Email'`);
@@ -65,8 +63,8 @@ describe('transformToJson', () => {
     testArr.push('H3332221,Jacques,Nicklaus,(222) 343-3434,the-golden-bear@hotmail.com');
     testArr.push('T45454545,Rickey,Mantle,(321)332-9132,the-mick@msn.com');
 
-    // test results from transformToJson
-    let employees = assets.transformToJson(testArr);
+    // test results from transformInput
+    let employees = assets.transformInput(testArr);
     it ('should return an array', () => {
         expect(employees).to.be.an('array');
     });

@@ -7,7 +7,7 @@ const Employee = require('./employee.js');
 const ValidationService = require('./validations.js');
 
 // helper function to transform array of strings into json structure.
-const transformToJson = (rows) => {
+const transformInput = (rows) => {
     let expectedHeaders = 'EmployeeID,First Name,Last Name,Phone Number,Email';
     // error handling.
     if (!rows.length) {
@@ -25,12 +25,33 @@ const transformToJson = (rows) => {
     });
 
     return transformedRows;
-}
+};
 
-// helper function to write to SQL
-const writeToDatabase = (data) => {
-    console.log("Establishing connection with mysql database...");
+// helper to transform array of objects into csv format.
+const transformOutput = (rows) => {
+    // first row of csv data should contain the new headers.
+    let header = 'EmployeeID, Fname, Lname, Phone, Date Created, Date Updated';
 
+    // error handling.
+    if (!rows.length) {
+        throw new Error('Database contains no data.');
+    }
+
+    transformedData = rows.map((row) => {
+        // better formatting for time
+        let createdAt = row.created_at.toLocaleString('en-US', { timeZone: 'UTC' });
+        let updatedAt = row.updated_at.toLocaleString('en-US', { timeZone: 'UTC' });
+
+        let employee = `${row.employee_id}, ${row.first_name}, ${row.last_name}, ${row.phone_number}, ${createdAt}, ${updatedAt}`;
+        return employee;
+    });
+
+    // add header text and joins strings by \n for each element.
+    transformedData.unshift(header);
+    return transformedData.join('\n');
+};
+
+const createDatabaseConnection = () => {
     // create database connection here.
     dotenv.config();
     const connection = mysql.createConnection({
@@ -41,37 +62,83 @@ const writeToDatabase = (data) => {
         database: process.env.MYSQL_DATABASE
     });
 
-    connection.connect((err) => {
-        if (err) throw err;
+    return connection;
+};
 
-        console.log("Connected!");
-        console.log('Writing to database...');
+// helper function to write to SQL
+const writeToDatabase = (data) => {
+    return new Promise((resolve) => {
 
-        let sql = `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email, created_at, updated_at) VALUES `;
-
-        data.forEach((employee, index) => {
-            sql += `('${employee.employeeId}', '${employee.firstName}', '${employee.lastName}', '${employee.phoneNumber}', '${employee.email}', null, null)`;
-
-            // only insert commas if not the last employee in the list.
-            if (index != data.length - 1) {
-                sql += ', ';
-            }
-        });
-        // on duplicate of employee id, update the provided values instead.
-        // in addition, do not modify the created_at column.
-        sql += ` ON DUPLICATE KEY UPDATE first_name = VALUES(first_name), last_name = VALUES(last_name), phone_number = VALUES(phone_number), email = VALUES(email), updated_at = null`;
-
-        connection.query(sql, (err, result) => {
+        console.log("Establishing connection with mysql database...");
+        const connection = createDatabaseConnection();
+        connection.connect((err) => {
             if (err) throw err;
-            console.log(`Success! ${data.length} record(s) affected.`);
-            connection.end();
+
+            console.log("Connected!");
+            console.log('Writing to database...');
+
+            let sql = `INSERT INTO employee (employee_id, first_name, last_name, phone_number, email, created_at, updated_at) VALUES `;
+
+            data.forEach((employee, index) => {
+                sql += `('${employee.employeeId}', '${employee.firstName}', '${employee.lastName}', '${employee.phoneNumber}', '${employee.email}', null, null)`;
+
+                // only insert commas if not the last employee in the list.
+                if (index != data.length - 1) {
+                    sql += ', ';
+                }
+            });
+            // on duplicate of employee id, update the provided values instead.
+            // in addition, do not modify the created_at column.
+            sql += ` ON DUPLICATE KEY UPDATE first_name = VALUES(first_name), last_name = VALUES(last_name), phone_number = VALUES(phone_number), email = VALUES(email), updated_at = null`;
+
+            connection.query(sql, (err, result) => {
+                if (err) throw err;
+                console.log(`Success! ${data.length} record(s) affected.`);
+                connection.end();
+                resolve();
+            });
+        });
+    });
+};
+
+// helper function to read from SQL
+const readFromDatabase = () => {
+    return new Promise((resolve, reject) => {
+
+        console.log("Re-establishing connection with mysql database...");
+        const connection = createDatabaseConnection();
+        connection.connect((err) => {
+            if (err) reject(err);
+    
+            console.log("Connected!");
+            console.log('Reading from database...');
+
+            let sql = `SELECT employee_id, first_name, last_name, phone_number, created_at, updated_at FROM employee`;
+
+            connection.query(sql, (err, result) => {
+                if (err) reject(err);
+
+                console.log(`Success! ${result.length} record(s).`);
+                connection.end();
+
+                resolve(result);
+            });
+
         });
     });
 };
 
 // helper function to write to an output path;
 const writeFile = (filepath) => {
-    console.log('Writing to an output file...');
+    // Headers as followed:
+    readFromDatabase().then((res) => {
+        let transformedData = transformOutput(res);
+
+        fs.writeFile(filepath, transformedData, 'utf8', (err) => {
+            if (err) throw err;
+            console.log(`CSV file created at ${filepath}`);
+        });
+    });
 };
 
 // read data from CSV file
@@ -91,16 +158,18 @@ const readInput = (filepath) => {
         .pipe(parse({ delimiter: ':' }))
         .on('error', (error) => reject(error))
         .on('data', (csvRow) => csvData.push(csvRow[0]))
-        .on('end', () => resolve(transformToJson(csvData)));
+        .on('end', () => resolve(transformInput(csvData)));
     });
 };
 
 // write data to CSV file and database.
-const writeOutput = (data, filepath) => {
-    writeToDatabase(data);
-    if (filepath) {
-        writeFile(data, filepath);
-    }
+const writeOutput = async (data, filepath) => {
+    await writeToDatabase(data).then(() => {
+        if (filepath) {
+            console.log('Output path detected. Writing to CSV file...');
+            writeFile(filepath);
+        }
+    });
 };
 
 // validate values
@@ -128,7 +197,7 @@ const validateData = (employees) => {
 };
 
 module.exports = {
-    transformToJson: transformToJson,
+    transformInput: transformInput,
     readInput: readInput,
     writeOutput: writeOutput,
     validateData: validateData
