@@ -2,6 +2,7 @@ const fs = require('fs');
 const parse = require('csv-parse');
 const dotenv = require('dotenv');
 const mysql = require('mysql');
+const moment = require('moment');
 
 const Employee = require('./employee.js');
 const ValidationService = require('./validations.js');
@@ -39,8 +40,8 @@ const transformOutput = (rows) => {
 
     transformedData = rows.map((row) => {
         // better formatting for time
-        let createdAt = row.created_at.toLocaleString('en-US', { timeZone: 'UTC' });
-        let updatedAt = row.updated_at.toLocaleString('en-US', { timeZone: 'UTC' });
+        let createdAt = moment(row.created_at).subtract(5, 'hours').format('YYYY-DD-MM hh:mm:ss A');
+        let updatedAt = moment(row.updated_at).subtract(5, 'hours').format('YYYY-DD-MM hh:mm:ss A');
 
         let employee = `${row.employee_id}, ${row.first_name}, ${row.last_name}, ${row.phone_number}, ${createdAt}, ${updatedAt}`;
         return employee;
