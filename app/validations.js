@@ -2,7 +2,7 @@
 const validateEmployeeId = (id, index) => {
     // Valid Employee IDs start with a letter and have a minimum of 6 digits after that.
     // this regex is self created. note that the first letter ignores cases.
-    var regex = /[a-z](?:\d.*){6,}/i;
+    var regex = /^[a-z]{1,1}(?:\d.*){6,}$/i;
     if (!regex.test(id)) {
         console.error(`Removed invalid entry on Line ${index + 2}. Reason: Invalid Employee ID`);
         return false;
