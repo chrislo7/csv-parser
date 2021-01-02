@@ -22,8 +22,9 @@ describe('readInput', () => {
         .to.throw(Error, 'Filetype xml is not supported. Please use a .csv file.');
     });
 
-    assets.readInput('input/input-test.csv', (data) => results = data);
-    setTimeout(() => {
+    assets.readInput('input/input-test.csv', (data) => {
+        results = data;
+
         it ('should take input from text file', () => {
             assert.exists(results);
         });
@@ -35,7 +36,7 @@ describe('readInput', () => {
                 expect(obj).to.include.all.keys('employeeId', 'firstName', 'lastName', 'phoneNumber', 'email');
             });
         });
-    }, 100);
+    });
 });
 
 describe('transformInput', () => {
