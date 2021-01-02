@@ -1,4 +1,4 @@
-const fn = require('./functions.js');
+const fn = require('./modules/functions.js');
 
 const paths = process.argv.slice(2);
 let input = paths[0];
