@@ -8,6 +8,7 @@ A command line application in Javascript that reads input from a .CSV file and s
 
 This application reads the CSV and parses them.
 Invalid data entries will be printed to command line, while valid entries will be stored in the database.
+If the entries contain the same employee ID, the appropriate employee's information will be updated in the database.
 
 If an output path is specified, a new CSV file will be created with valid entries.
 
