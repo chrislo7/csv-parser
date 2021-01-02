@@ -1,4 +1,4 @@
-const assets = require('../validations');
+const assets = require('../modules/validations.js');
 
 const expect = require('chai').expect;
 

@@ -1,9 +1,9 @@
-const assets = require('../functions.js');
+const assets = require('../modules/functions.js');
 
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 
-const Employee = require('../employee.js');
+const Employee = require('../modules/employee.js');
 
 describe('readInput', () => {
     let results;
